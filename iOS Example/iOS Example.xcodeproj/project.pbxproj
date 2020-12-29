@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E075B9A259A2CDE00C0B59B /* NestedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E075B99259A2CDE00C0B59B /* NestedPage.swift */; };
 		D9A12776235699C600D136A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A12775235699C600D136A5 /* AppDelegate.swift */; };
 		D9A12778235699C600D136A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A12777235699C600D136A5 /* SceneDelegate.swift */; };
 		D9A1277F235699C700D136A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D9A1277E235699C700D136A5 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E075B99259A2CDE00C0B59B /* NestedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedPage.swift; sourceTree = "<group>"; };
 		D9A12772235699C600D136A5 /* iOS Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9A12775235699C600D136A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D9A12777235699C600D136A5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -35,6 +37,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E075B98259A2CB100C0B59B /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				4E075B99259A2CDE00C0B59B /* NestedPage.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		D9A12769235699C600D136A5 = {
 			isa = PBXGroup;
 			children = (
@@ -55,6 +65,7 @@
 		D9A12774235699C600D136A5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				4E075B98259A2CB100C0B59B /* Navigation */,
 				D9A12775235699C600D136A5 /* AppDelegate.swift */,
 				D9A12777235699C600D136A5 /* SceneDelegate.swift */,
 				D9A1277E235699C700D136A5 /* Assets.xcassets */,
@@ -146,6 +157,7 @@
 			files = (
 				D9A12776235699C600D136A5 /* AppDelegate.swift in Sources */,
 				D9A12778235699C600D136A5 /* SceneDelegate.swift in Sources */,
+				4E075B9A259A2CDE00C0B59B /* NestedPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
