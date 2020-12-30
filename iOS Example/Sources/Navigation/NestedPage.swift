@@ -23,7 +23,7 @@ enum NestedRoute: IRoute {
     }
     
     var content: AnyView {
-        guard let count = model else { return AnyView(EmptyView()) }
+        let count = model ?? 0
         return AnyView(VMView(
             viewModel: NestedPageViewModel(count: count),
             content: NestedPage()
@@ -36,7 +36,6 @@ enum NestedRoute: IRoute {
 struct NestedPage: View {
     
     @EnvironmentObject var viewModel: NestedPageViewModel
-    @State private var showingAlert = false
     
     var body: some View {
         VStack {
@@ -52,10 +51,36 @@ struct NestedPage: View {
             
             Button(action: viewModel.pushDetail, label: {
                 HStack {
-                    Text("Nested push")
+                    Text("Push")
                         .foregroundColor(.white)
                         .font(.headline)
                     Image(systemName: "chevron.right")
+                        .foregroundColor(.white)
+                }
+                .padding(.all)
+            })
+            .background(Color.blue)
+            .cornerRadius(5)
+            
+            Button(action: viewModel.presentDetail, label: {
+                HStack {
+                    Text("Present")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                    Image(systemName: "chevron.up")
+                        .foregroundColor(.white)
+                }
+                .padding(.all)
+            })
+            .background(Color.blue)
+            .cornerRadius(5)
+            
+            Button(action: viewModel.showAlert, label: {
+                HStack {
+                    Text("Show alert")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                    Image(systemName: "info.circle")
                         .foregroundColor(.white)
                 }
                 .padding(.all)
@@ -82,7 +107,15 @@ class NestedPageViewModel: ViewModel<NestedRoute>, ObservableObject {
     }
     
     func pushDetail() {
-        alertService.presentOkayAlert(title: "Test title", message: "Test message")
+        push(to: .detail(count: count))
+    }
+    
+    func presentDetail() {
+        present(to: .detail(count: count))
+    }
+    
+    func showAlert() {
+        alertService.presentOkayAlert(title: "Alert is showing", message: "Your count is \(count)")
     }
 }
 
