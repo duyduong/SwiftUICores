@@ -21,15 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         Resolver.registerAllServices()
         
-        let contentView = NavigationView {
-            VMView(
-                viewModel: NestedPageViewModel(),
-                content: NestedPage()
-            )
-        }
-        
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIHostingController(rootView: contentView)
+        window.rootViewController = UIHostingController(rootView: NavigationView {
+            StoreView(content: NestedPage.self, store: NestedPageStore())
+        })
         self.window = window
         window.makeKeyAndVisible()
     }

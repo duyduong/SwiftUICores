@@ -1,5 +1,5 @@
 //
-//  ViewModel.swift
+//  Store.swift
 //  
 //
 //  Created by Dao Duy Duong on 28/12/2020.
@@ -30,7 +30,7 @@ public struct EmptyRoute: IRoute {
 }
 
 /// Core ViewModel
-public protocol IViewModel: class {
+public protocol IStore: class {
     associatedtype R: IRoute
     
     var navigationRoute: R? { get set }
@@ -41,7 +41,7 @@ public protocol IViewModel: class {
 }
 
 /// Super ViewModel class for inherit
-open class ViewModel<R: IRoute>: IViewModel {
+open class Store<R: IRoute>: IStore {
     @Published public var navigationRoute: R?
     @Published public var modalRoute: R?
     

@@ -13,7 +13,7 @@ private class AlertController: UIAlertController {
     
     private var alertWindow: UIWindow? = nil
     
-    fileprivate func show() {
+    func show() {
         let blankViewController = UIViewController()
         blankViewController.view.backgroundColor = .clear
         
@@ -27,7 +27,7 @@ private class AlertController: UIAlertController {
         blankViewController.present(self, animated: true)
     }
     
-    fileprivate func hide() {
+    func hide() {
         alertWindow?.isHidden = true
         alertWindow = nil
     }

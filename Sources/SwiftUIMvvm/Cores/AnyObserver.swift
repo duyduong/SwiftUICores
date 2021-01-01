@@ -7,14 +7,16 @@
 
 import Combine
 
-public struct AnyObserver<Output, Failure: Error> {
-    let onNext: ((Output) -> Void)
-    let onError: ((Failure) -> Void)
-    let onComplete: (() -> Void)
-}
-
 public extension AnyPublisher {
     
+    /// Custom object for create a custom publisher
+    struct AnyObserver<Output, Failure: Error> {
+        let onNext: ((Output) -> Void)
+        let onError: ((Failure) -> Void)
+        let onComplete: (() -> Void)
+    }
+    
+    /// Create a publisher
     static func create(subscribe: @escaping (AnyObserver<Output, Failure>) -> AnyCancellable) -> Self {
         let subject = PassthroughSubject<Output, Failure>()
         var disposable: AnyCancellable?
@@ -22,8 +24,8 @@ public extension AnyPublisher {
         return subject.handleEvents(
             receiveSubscription: { subscription in
                 disposable = subscribe(AnyObserver(
-                    onNext: { output in subject.send(output) },
-                    onError: { failure in subject.send(completion: .failure(failure)) },
+                    onNext: { subject.send($0) },
+                    onError: { subject.send(completion: .failure($0)) },
                     onComplete: { subject.send(completion: .finished) }
                 ))
             },

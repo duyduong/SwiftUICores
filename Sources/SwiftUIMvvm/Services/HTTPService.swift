@@ -62,7 +62,7 @@ public extension HTTPDownloadEndpoint {
 // MARK: - HTTP Upload Endpoint
 
 public protocol HTTPUploadEndpoint: HTTPEndpoint {
-    func updateMultipartFormData(_ formData: MultipartFormData)
+    func prepareFormData(_ formData: MultipartFormData)
 }
 
 // MARK: - HTTP Service
@@ -75,8 +75,6 @@ public enum HTTPServiceError: Error {
 
 public class HTTPService {
     
-    typealias RetryCompletion = (RetryResult) -> Void
-    
     /// Shared instance
     public static let shared = HTTPService()
     
@@ -85,7 +83,8 @@ public class HTTPService {
         sessionManager.sessionConfiguration
     }
     
-    private lazy var sessionManager = Session(configuration: URLSessionConfiguration.default)
+    private lazy var sessionManager = Session(configuration: .default)
+    private var interceptorBlock: ((URLRequest, Session, ((Result<URLRequest, Error>) -> Void)) -> Void)?
     
     private init() {}
 }
@@ -94,7 +93,12 @@ public class HTTPService {
 
 extension HTTPService: RequestInterceptor {
     
+    public func setRequestInterceptor(handler: @escaping ((URLRequest, Session, ((Result<URLRequest, Error>) -> Void)) -> Void)) {
+        interceptorBlock = handler
+    }
+    
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        interceptorBlock?(urlRequest, session, completion)
     }
 }
 
@@ -205,25 +209,23 @@ public extension HTTPService {
                 urlRequest.setValue(value, forHTTPHeaderField: key)
             }
             
-            let request = self.sessionManager.download(urlRequest) { (temporaryURL, _) in
-                do { try FileManager.default.removeItem(at: endpoint.destinationURL) }
-                catch {}
-                
-                return (destinationURL: endpoint.destinationURL, options: .removePreviousFile)
+            let request = self.sessionManager.download(urlRequest, interceptor: endpoint.shouldIntercept ? self : nil) { (temporaryURL, _) in
+                (destinationURL: endpoint.destinationURL, options: .removePreviousFile)
             }
             
             request.downloadProgress { observer.onNext($0) }
             
-            request.validate().response(completionHandler: { response in
+            request.validate().response { response in
                 switch response.result {
                 case .success: observer.onComplete()
                 case .failure(let error): observer.onError(HTTPServiceError.unknown(error))
                 }
-            })
+            }
             
             return AnyCancellable { request.cancel() }
         }
         .mapError(endpoint.transformError(_:))
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
     
@@ -236,7 +238,7 @@ public extension HTTPService {
     func upload(withEndpoint endpoint: HTTPUploadEndpoint) -> AnyPublisher<Progress, Error> {
         return AnyPublisher.create { observer in
             let request = self.sessionManager.upload(
-                multipartFormData: endpoint.updateMultipartFormData,
+                multipartFormData: endpoint.prepareFormData,
                 to: endpoint.fullURL,
                 method: endpoint.method,
                 headers: endpoint.headers,
@@ -245,16 +247,17 @@ public extension HTTPService {
             
             request.uploadProgress { observer.onNext($0) }
             
-            request.validate().response(completionHandler: { response in
+            request.validate().response { response in
                 switch response.result {
                 case .success: observer.onComplete()
                 case .failure(let error): observer.onError(HTTPServiceError.unknown(error))
                 }
-            })
+            }
             
             return AnyCancellable { request.cancel() }
         }
         .mapError(endpoint.transformError(_:))
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
 }

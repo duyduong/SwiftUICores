@@ -5,41 +5,85 @@
 //  Created by Dao Duy Duong on 29/12/2020.
 //
 
+import Foundation
 import SwiftUI
 import AlamofireImage
 
-public struct NetworkImage: UIViewRepresentable {
+/// Custom network image
+public struct NetworkImage<PlaceholderView: View>: View {
     
-    var url: URL?
-    var contentMode: UIView.ContentMode
-    var placeholder: UIImage?
-    var imageTransition: UIImageView.ImageTransition
+    let url: URL?
+    let contentMode: UIView.ContentMode
+    let imageTransition: UIImageView.ImageTransition
+    let placeholder: (() -> PlaceholderView)
+    let progressView: ((Binding<Float>) -> AnyView)?
+    
+    @State private var progress: Float = 0
+    @State private var image: UIImage?
     
     public init(
         url: URL?,
-        contentMode: UIView.ContentMode = .scaleAspectFill,
-        placeholder: UIImage? = nil,
-        imageTransition: UIImageView.ImageTransition = .crossDissolve(0.25)
+        contentMode: UIView.ContentMode = .scaleToFill,
+        imageTransition: UIImageView.ImageTransition = .crossDissolve(0.25),
+        placeholder: @escaping (() -> PlaceholderView),
+        progressView: ((Binding<Float>) -> AnyView)? = nil
     ) {
         self.url = url
         self.contentMode = contentMode
-        self.placeholder = placeholder
         self.imageTransition = imageTransition
+        self.placeholder = placeholder
+        self.progressView = progressView
+    }
+    
+    public var body: some View {
+        ZStack {
+            if image == nil {
+                placeholder().fillParent()
+                
+                if let progressView = progressView {
+                    progressView($progress)
+                }
+            }
+            
+            AFImage(
+                url: url,
+                contentMode: contentMode,
+                imageTransition: imageTransition,
+                progress: { progress = Float($0.fractionCompleted) },
+                completion: { image = $0 }
+            ).fillParent()
+        }
+    }
+}
+
+private struct AFImage: UIViewRepresentable {
+    
+    let url: URL?
+    let contentMode: UIView.ContentMode
+    let imageTransition: UIImageView.ImageTransition
+    let progress: ((Progress) -> Void)
+    let completion: ((UIImage?) -> Void)
+
+    func makeUIView(context: UIViewRepresentableContext<AFImage>) -> UIImageView {
+        UIImageView()
     }
 
-    public func makeUIView(context: UIViewRepresentableContext<NetworkImage>) -> UIImageView {
-        return UIImageView(image: placeholder)
-    }
-
-    public func updateUIView(_ uiView: UIImageView, context: UIViewRepresentableContext<NetworkImage>) {
+    func updateUIView(_ uiView: UIImageView, context: UIViewRepresentableContext<AFImage>) {
         uiView.contentMode = contentMode
-        uiView.image = placeholder
         
         guard let url = url else { return }
         uiView.af.setImage(
             withURL: url,
-            placeholderImage: placeholder,
-            imageTransition: imageTransition
+            progress: progress,
+            imageTransition: imageTransition,
+            completion: { response in
+                DispatchQueue.main.async {
+                    switch response.result {
+                    case .success(let image): self.completion(image)
+                    case .failure: self.completion(nil)
+                    }
+                }
+            }
         )
     }
 }

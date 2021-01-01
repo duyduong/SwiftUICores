@@ -27,7 +27,7 @@ public extension UIWindowScene {
     
     /// Get current window scene
     static var focused: UIWindowScene? {
-        return UIApplication.shared.connectedScenes
+        UIApplication.shared.connectedScenes
             .first { $0.activationState == .foregroundActive && $0 is UIWindowScene } as? UIWindowScene
     }
     
