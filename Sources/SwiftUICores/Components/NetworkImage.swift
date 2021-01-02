@@ -10,18 +10,29 @@ import SwiftUI
 import AlamofireImage
 
 /// Custom network image
-public struct NetworkImage<PlaceholderView: View>: View {
+public struct NetworkImage: View {
     
     let url: URL?
     let contentMode: UIView.ContentMode
     let imageTransition: UIImageView.ImageTransition
-    let placeholder: (() -> PlaceholderView)
-    let progressView: ((Binding<Float>) -> AnyView)?
+    let placeholder: AnyView
+    var progressView: ((Binding<Float>) -> AnyView)? = nil
     
     @State private var progress: Float = 0
     @State private var image: UIImage?
     
     public init(
+        url: URL?,
+        contentMode: UIView.ContentMode = .scaleToFill,
+        imageTransition: UIImageView.ImageTransition = .crossDissolve(0.25)
+    ) {
+        self.url = url
+        self.contentMode = contentMode
+        self.imageTransition = imageTransition
+        self.placeholder = AnyView(EmptyView())
+    }
+    
+    public init<PlaceholderView: View>(
         url: URL?,
         contentMode: UIView.ContentMode = .scaleToFill,
         imageTransition: UIImageView.ImageTransition = .crossDissolve(0.25),
@@ -31,14 +42,14 @@ public struct NetworkImage<PlaceholderView: View>: View {
         self.url = url
         self.contentMode = contentMode
         self.imageTransition = imageTransition
-        self.placeholder = placeholder
+        self.placeholder = AnyView(placeholder())
         self.progressView = progressView
     }
     
     public var body: some View {
         ZStack {
             if image == nil {
-                placeholder().fillParent()
+                placeholder.fillParent()
                 
                 if let progressView = progressView {
                     progressView($progress)

@@ -11,6 +11,8 @@ import Combine
 public final class CancellableBag {
     fileprivate var subscriptions = Set<AnyCancellable>()
     
+    public init() {}
+    
     public func dispose() {
         subscriptions.forEach { $0.cancel() }
     }
