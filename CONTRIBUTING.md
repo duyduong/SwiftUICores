@@ -8,12 +8,12 @@ When you commit a change, please add a note to [CHANGELOG.md](CHANGELOG.md).
 
 ## Release process
 
-1. Confirm the build is [passing in travis](https://travis-ci.org/dduy.duong/SwiftUIMvvm)
+1. Confirm the build is [passing in travis](https://travis-ci.org/dduy.duong/SwiftUICores)
    1. This automatically checks the Podfile is building
 2. Push a release commit
    1. Create a new Master section at the top
    2. Rename the old Master section like:
-          ## [1.0.5](https://github.com/dduy.duong/SwiftUIMvvm/releases/tag/1.0.5)
+          ## [1.0.5](https://github.com/dduy.duong/SwiftUICores/releases/tag/1.0.5)
           Released on 2019-10-15.
    3. Update the Podspec version number
 3. Create a GitHub release

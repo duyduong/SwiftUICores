@@ -1,7 +1,7 @@
 import XCTest
 
-import SwiftUIMvvmTests
+import SwiftUICoresTests
 
 var tests = [XCTestCaseEntry]()
-tests += SwiftUIMvvmTests.allTests()
+tests += SwiftUICoresTests.allTests()
 XCTMain(tests)

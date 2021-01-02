@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import SwiftUIMvvm
+import SwiftUICores
 
 /// Nested push with model passing
 enum NestedRoute: IRoute {

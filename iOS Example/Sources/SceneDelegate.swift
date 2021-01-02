@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import SwiftUIMvvm
+import SwiftUICores
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

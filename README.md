@@ -4,7 +4,7 @@ Thank you for using Swift 5 Module Template. Before you release your awesome pro
 
 THIS LIST IS EASY, CHECK IT OFF ONE-BY-ONE BABY! ✔️ ✔️ ✔️
 
- - [ ] Open the project in Xcode and add features to SwiftUIMvvm
+ - [ ] Open the project in Xcode and add features to SwiftUICores
  - [ ] Make sure you are using Swift 5 (Edit > Convert > To Current Swift Syntax…)
  - [ ] Fix all build errors and warnings, add tests (yes really)
  - [ ] Add a screenshot or AT LEAST some picture below in this README
@@ -15,11 +15,11 @@ THEN YOU'RE DONE, GO STAR [swift5-module-template](https://github.com/fulldecent
 
 ----
 
-# SwiftUIMvvm
+# SwiftUICores
 
-[![CI Status](http://img.shields.io/travis/dduy.duong/SwiftUIMvvm.svg?style=flat)](https://travis-ci.org/dduy.duong/SwiftUIMvvm)
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/dduy.duong/SwiftUIMvvm)
-[![License](https://img.shields.io/github/license/dduy.duong/SwiftUIMvvm)](LICENSE)
+[![CI Status](http://img.shields.io/travis/dduy.duong/SwiftUICores.svg?style=flat)](https://travis-ci.org/dduy.duong/SwiftUICores)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/dduy.duong/SwiftUICores)
+[![License](https://img.shields.io/github/license/dduy.duong/SwiftUICores)](LICENSE)
 
 <a href="https://placehold.it/400?text=Screen+shot"><img width=200 height=200 src="https://placehold.it/400?text=Screen+shot" alt="Screenshot" /></a>
 
@@ -38,24 +38,24 @@ Add this to your project using Swift Package Manager. In Xcode that is simply: F
 
 ### CocoaPods
 
-If you are already using [CocoaPods](http://cocoapods.org), just add 'SwiftUIMvvm' to your `Podfile` then run `pod install`.
+If you are already using [CocoaPods](http://cocoapods.org), just add 'SwiftUICores' to your `Podfile` then run `pod install`.
 
 ### Carthage
 
 If you are already using [Carthage](https://github.com/Carthage/Carthage), just add to your `Cartfile`:
 
 ```ogdl
-github "dduy.duong/SwiftUIMvvm" ~> 0.1
+github "dduy.duong/SwiftUICores" ~> 0.1
 ```
 
-Then run `carthage update` to build the framework and drag the built `SwiftUIMvvm`.framework into your Xcode project.
+Then run `carthage update` to build the framework and drag the built `SwiftUICores`.framework into your Xcode project.
 
 
 ## Author
 
-Duong Dao
+Duy Duong
 
 
 ## License
 
-SwiftUIMvvm is available under the MIT license. See [the LICENSE file](LICENSE) for more information.
+SwiftUICores is available under the MIT license. See [the LICENSE file](LICENSE) for more information.

@@ -1,12 +1,12 @@
 import XCTest
-@testable import SwiftUIMvvm
+@testable import SwiftUICores
 
-final class SwiftUIMvvmTests: XCTestCase {
+final class SwiftUICoresTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(SwiftUIMvvm().text, "Hello, World!")
+        XCTAssertEqual(SwiftUICores().text, "Hello, World!")
     }
 
     static var allTests = [
