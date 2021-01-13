@@ -44,6 +44,10 @@ public struct AlertAction {
     let title: String
     let style: UIAlertAction.Style
     
+    /// Create new alert action
+    /// - Parameters:
+    ///   - title: Action title
+    ///   - style: Action style
     public init(title: String, style: UIAlertAction.Style) {
         self.title = title
         self.style = style
@@ -57,29 +61,37 @@ public struct AlertAction {
 public protocol IAlertService {
     
     /// Present an alert with list of actions
-    ///
-    /// Whenever the user pressed on an action, its index will be returned
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - actions: Alert actions
+    /// - Returns: Pressed action index in `actions` array
     func presentAlertPublisher(title: String?, message: String?, actions: [AlertAction]) -> AnyPublisher<Int, Never>
     
     /// Present an action sheet alert with list of actions and a cancel action
-    ///
-    /// Whenever the user pressed on an action, its index will be returned. Otherwise cancel action returns `-1`
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - actions: Alert actions
+    ///   - cancelAction: Cancel action
+    /// - Returns: Pressed action index in `actions` array, `cancelAction` will return `-1`
     func presentActionSheetPublisher(
         title: String?,
         message: String?,
         actions: [AlertAction],
         cancelAction: AlertAction
     ) -> AnyPublisher<Int, Never>
-    
-    /// Present a simple alert with one action styled `cancel`
-    func presentOkayAlert(title: String?, message: String?, okAction: AlertAction)
 }
 
 public extension IAlertService {
     
     /// Present an action sheet alert with list of actions and a cancel action
-    ///
-    /// Whenever the user pressed on an action, its index will be returned. Otherwise cancel action returns `-1`
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - actions: Alert actions
+    ///   - cancelAction: Cancel action
+    /// - Returns: Pressed action index in `actions` array, `cancelAction` will return `-1`
     func presentActionSheetPublisher(
         title: String?,
         message: String?,
@@ -88,8 +100,15 @@ public extension IAlertService {
     ) -> AnyPublisher<Int, Never> {
         presentActionSheetPublisher(title: title, message: message, actions: actions, cancelAction: cancelAction)
     }
+}
 
-    /// Present a simple alert with one action styled `cancel`
+public extension IAlertService {
+    
+    /// Present an simple alert with one button
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - okAction: Button action
     func presentOkayAlertPublisher(
         title: String?,
         message: String?,
@@ -100,9 +119,15 @@ public extension IAlertService {
             .eraseToAnyPublisher()
     }
     
-    /// Present a simple alert with one action styled `cancel`
+    /// Present an simple alert with one button
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - okAction: Button action
     func presentOkayAlert(title: String?, message: String?, okAction: AlertAction = .init(title: "OK", style: .cancel)) {
-        presentOkayAlert(title: title, message: message, okAction: okAction)
+        let controller = AlertController(title: title, message: message, preferredStyle: .alert)
+        controller.addAction(okAction.uiAction())
+        controller.show()
     }
 }
 
@@ -111,8 +136,11 @@ public class AlertService: IAlertService {
     public init() {}
     
     /// Present an alert with list of actions
-    ///
-    /// Whenever the user pressed on an action, its index will be returned
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - actions: Alert actions
+    /// - Returns: Pressed action index in `actions` array
     public func presentAlertPublisher(title: String?, message: String?, actions: [AlertAction]) -> AnyPublisher<Int, Never> {
         return Future { promise in
             let controller = AlertController(title: title, message: message, preferredStyle: .alert)
@@ -130,8 +158,12 @@ public class AlertService: IAlertService {
     }
     
     /// Present an action sheet alert with list of actions and a cancel action
-    ///
-    /// Whenever the user pressed on an action, its index will be returned. Otherwise cancel action returns `-1`
+    /// - Parameters:
+    ///   - title: Alert title
+    ///   - message: Alert message
+    ///   - actions: Alert actions
+    ///   - cancelAction: Cancel action
+    /// - Returns: Pressed action index in `actions` array, `cancelAction` will return `-1`
     public func presentActionSheetPublisher(title: String?, message: String?, actions: [AlertAction], cancelAction: AlertAction) -> AnyPublisher<Int, Never> {
         return Future { promise in
             let controller = AlertController(title: title, message: message, preferredStyle: .actionSheet)
@@ -150,12 +182,5 @@ public class AlertService: IAlertService {
             controller.show()
         }
         .eraseToAnyPublisher()
-    }
-    
-    /// Present a simple alert with one action styled `cancel`
-    public func presentOkayAlert(title: String?, message: String?, okAction: AlertAction = .init(title: "OK", style: .cancel)) {
-        let controller = AlertController(title: title, message: message, preferredStyle: .alert)
-        controller.addAction(okAction.uiAction())
-        controller.show()
     }
 }

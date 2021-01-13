@@ -16,7 +16,9 @@ public extension AnyPublisher {
         let onComplete: (() -> Void)
     }
     
-    /// Create a publisher
+    /// Create custom publisher in `RxSwift` style
+    /// - Parameter subscribe: Subscribe block
+    /// - Returns: Publisher
     static func create(subscribe: @escaping (AnyObserver<Output, Failure>) -> AnyCancellable) -> Self {
         let subject = PassthroughSubject<Output, Failure>()
         var disposable: AnyCancellable?

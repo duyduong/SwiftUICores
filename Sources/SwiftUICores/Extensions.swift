@@ -47,12 +47,19 @@ public extension CGSize {
 public extension UIImage {
     
     /// Create image from mono color
+    /// - Parameter color: Image color
+    /// - Returns: Transformed image
     static func from(color: UIColor) -> UIImage {
         let size: CGSize = .square(1)
         return from(color: color, withSize: size)
     }
     
     /// Create image from mono color with specific size and corner radius
+    /// - Parameters:
+    ///   - color: Image color
+    ///   - size: Image size
+    ///   - cornerRadius: Corner radius
+    /// - Returns: Transformed image
     static func from(color: UIColor, withSize size: CGSize, cornerRadius: CGFloat = 0) -> UIImage {
         defer { UIGraphicsEndImageContext() }
         
@@ -67,6 +74,9 @@ public extension UIImage {
 
 public extension UIImage {
     
+    /// Create new image with different color
+    /// - Parameter color: Color to change
+    /// - Returns: Transformed image
     func withColor(_ color: UIColor) -> UIImage? {
         defer { UIGraphicsEndImageContext() }
         
@@ -86,6 +96,9 @@ public extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     
+    /// Create new image with different alpha component
+    /// - Parameter value: Alpha value
+    /// - Returns: Transformed image
     func withAlpha(_ value: CGFloat) -> UIImage? {
         defer { UIGraphicsEndImageContext() }
         
@@ -94,6 +107,9 @@ public extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     
+    /// Create new image with different size
+    /// - Parameter size: New image size
+    /// - Returns: Transformed image
     func withSize(_ size: CGSize) -> UIImage? {
         defer { UIGraphicsEndImageContext() }
 

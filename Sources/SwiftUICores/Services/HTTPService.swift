@@ -67,6 +67,8 @@ public protocol HTTPUploadEndpoint: HTTPEndpoint {
 
 // MARK: - HTTP Service
 
+public typealias InterceptorBlock = (URLRequest, Session, ((Result<URLRequest, Error>) -> Void)) -> Void
+
 public enum HTTPServiceError: Error {
     case requestFailed(statusCode: Int, response: Any?)
     case decodingFailed(HTTPEndpoint)
@@ -75,25 +77,28 @@ public enum HTTPServiceError: Error {
 
 public class HTTPService {
     
-    /// Shared instance
-    public static let shared = HTTPService()
-    
     /// Session configuration
     public var configuration: URLSessionConfiguration {
         sessionManager.sessionConfiguration
     }
     
-    private lazy var sessionManager = Session(configuration: .default)
-    private var interceptorBlock: ((URLRequest, Session, ((Result<URLRequest, Error>) -> Void)) -> Void)?
+    private let sessionManager: Session
+    private var interceptorBlock: InterceptorBlock?
     
-    private init() {}
+    /// Init new HTTP service
+    /// - Parameter configuration: The session configuration
+    public init(configuration: URLSessionConfiguration = .default) {
+        sessionManager = Session(configuration: configuration)
+    }
 }
 
 // MARK - Request interceptor
 
 extension HTTPService: RequestInterceptor {
     
-    public func setRequestInterceptor(handler: @escaping ((URLRequest, Session, ((Result<URLRequest, Error>) -> Void)) -> Void)) {
+    /// Set the request interceptor handler
+    /// - Parameter handler: Interceptor block
+    public func setRequestInterceptor(handler: @escaping InterceptorBlock) {
         interceptorBlock = handler
     }
     

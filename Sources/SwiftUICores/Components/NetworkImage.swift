@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import AlamofireImage
 
-/// Custom network image
+/// Custom network image using `AlamofireImage` for caching and downloading
 public struct NetworkImage: View {
     
     let url: URL?
