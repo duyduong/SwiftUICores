@@ -22,7 +22,7 @@ public protocol HTTPEndpoint {
     var parameters: [String: Any]? { get }
     var retries: Int { get }
     
-    func transformError(_ error: Error) -> Error
+    func mapped(_ error: Error) -> Error
 }
 
 public extension HTTPEndpoint {
@@ -44,7 +44,7 @@ public extension HTTPEndpoint {
     var parameters: [String: Any]? { nil }
     var retries: Int { 1 }
     
-    func transformError(_ error: Error) -> Error { error }
+    func mapped(_ error: Error) -> Error { error }
 }
 
 // MARK: - HTTP Download Endpoint
@@ -71,7 +71,7 @@ public typealias InterceptorBlock = (URLRequest, Session, ((Result<URLRequest, E
 
 public enum HTTPServiceError: Error {
     case requestFailed(statusCode: Int, response: Any?)
-    case decodingFailed(HTTPEndpoint)
+    case decodingFailed(endpoint: HTTPEndpoint, error: Error)
     case unknown(Error?)
 }
 
@@ -111,12 +111,9 @@ extension HTTPService: RequestInterceptor {
 
 public extension HTTPService {
     
-    /**
-     Call API request with an endpoint
-     
-     - parameter endpoint: An `HTTPEndpoint` enum.
-     - returns: A tuple contains `HTTPURLResponse` and data.
-     */
+    /// Call API request with an endpoint
+    /// - Parameter endpoint: HTTP Endpoint to request
+    /// - Returns: Request data
     func requestData(withEndpoint endpoint: HTTPEndpoint) -> AnyPublisher<(HTTPURLResponse, Data), Error> {
         return Future { promise in
             let request = self.sessionManager.request(
@@ -149,49 +146,47 @@ public extension HTTPService {
             }
         }
         .retry(endpoint.retries)
-        .mapError(endpoint.transformError(_:))
+        .mapError(endpoint.mapped(_:))
         .eraseToAnyPublisher()
     }
     
-    /**
-     Call API request with an endpoint and transform response into `JSON` object
-     
-     - parameter endpoint: An `HTTPEndpoint` enum.
-     - returns: A tuple contains `HTTPURLResponse` and `JSON` data.
-     */
-    func requestJSON(withEndpoint endpoint: HTTPEndpoint) -> AnyPublisher<(HTTPURLResponse, Any), Error> {
+    /// Call API request with an endpoint and transform response into `JSON` object
+    /// - Parameters:
+    ///   - endpoint: HTTP Endpoint to request
+    ///   - queue: Dispatch Queue to transform to `JSON`
+    /// - Returns: `JSON` object
+    func requestJSON(withEndpoint endpoint: HTTPEndpoint, queue: DispatchQueue = DispatchQueue.global(qos: .background)) -> AnyPublisher<(HTTPURLResponse, Any), Error> {
         return requestData(withEndpoint: endpoint)
-            .receive(on: DispatchQueue.global(qos: .background))
+            .receive(on: queue)
             .tryMap {
                 do {
                     let JSON = try JSONSerialization.jsonObject(with: $1, options: .allowFragments)
                     return ($0, JSON)
                 } catch {
-                    throw HTTPServiceError.decodingFailed(endpoint)
+                    throw HTTPServiceError.decodingFailed(endpoint: endpoint, error: error)
                 }
             }
-            .mapError(endpoint.transformError(_:))
+            .mapError(endpoint.mapped(_:))
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
-    /**
-     Call API request with an endpoint and transform response into a `Decodable` object
-     
-     - parameter endpoint: An `HTTPEndpoint` enum.
-     - returns: `Decodable` object.
-     */
-    func requestDecodable<M: Decodable>(withEndpoint endpoint: HTTPEndpoint) -> AnyPublisher<M, Error> {
+    /// Call API request with an endpoint and transform response into a `Decodable` object
+    /// - Parameters:
+    ///   - endpoint: HTTP Endpoint to request
+    ///   - queue: Dispatch Queue to transform to `Decodable`
+    /// - Returns: `Decodable` object
+    func requestDecodable<M: Decodable>(withEndpoint endpoint: HTTPEndpoint, queue: DispatchQueue = DispatchQueue.global(qos: .background)) -> AnyPublisher<M, Error> {
         return requestData(withEndpoint: endpoint)
-            .receive(on: DispatchQueue.global(qos: .background))
+            .receive(on: queue)
             .tryMap {
                 do {
                     return try JSONDecoder().decode(M.self, from: $1)
                 } catch {
-                    throw HTTPServiceError.decodingFailed(endpoint)
+                    throw HTTPServiceError.decodingFailed(endpoint: endpoint, error: error)
                 }
             }
-            .mapError(endpoint.transformError(_:))
+            .mapError(endpoint.mapped(_:))
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
@@ -229,7 +224,7 @@ public extension HTTPService {
             
             return AnyCancellable { request.cancel() }
         }
-        .mapError(endpoint.transformError(_:))
+        .mapError(endpoint.mapped(_:))
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
@@ -261,7 +256,7 @@ public extension HTTPService {
             
             return AnyCancellable { request.cancel() }
         }
-        .mapError(endpoint.transformError(_:))
+        .mapError(endpoint.mapped(_:))
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }

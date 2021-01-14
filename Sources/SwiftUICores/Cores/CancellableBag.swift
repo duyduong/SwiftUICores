@@ -7,16 +7,8 @@
 
 import Combine
 
-/// Wrapping for cancellable
-public final class CancellableBag {
-    fileprivate var subscriptions = Set<AnyCancellable>()
-    
-    public init() {}
-    
-    public func dispose() {
-        subscriptions.forEach { $0.cancel() }
-    }
-}
+/// Shorthand for `Set<AnyCancellable>`
+public typealias CancellableBag = Set<AnyCancellable>
 
 // MARK: - Store in cancellable bag
 
@@ -26,7 +18,6 @@ precedencegroup DisposablePrecedence {
 
 infix operator =>: DisposablePrecedence
 
-public func =>(cancelable: AnyCancellable, bag: CancellableBag?) {
-    guard let bag = bag else { return }
-    cancelable.store(in: &bag.subscriptions)
+public func =>(cancelable: AnyCancellable, bag: inout CancellableBag) {
+    cancelable.store(in: &bag)
 }

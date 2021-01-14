@@ -12,6 +12,11 @@ import Combine
 // MARK: - Publics
 
 public extension View {
+    
+    
+    /// Fill the parent container
+    /// - Parameter alignment: Aligment
+    /// - Returns: Optional view
     func fillParent(alignment: Alignment = .center) -> some View {
         frame(
             minWidth: 0,
@@ -31,7 +36,9 @@ public extension UIWindowScene {
             .first { $0.activationState == .foregroundActive && $0 is UIWindowScene } as? UIWindowScene
     }
     
+    
     /// Create new window in iOS 13 with `UIWindowScene`
+    /// - Returns: New `UIWindow`
     static func createNewWindow() -> UIWindow {
         focused.map(UIWindow.init(windowScene:)) ?? UIWindow(frame: UIScreen.main.bounds)
     }
@@ -39,6 +46,10 @@ public extension UIWindowScene {
 
 public extension CGSize {
     
+    
+    /// Shorthand to create a square size
+    /// - Parameter size: size in `CGFloat`
+    /// - Returns: CGSize
     static func square(_ size: CGFloat) -> CGSize {
         CGSize(width: size, height: size)
     }
